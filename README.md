@@ -129,6 +129,7 @@ filtered = lfilter(b_high, a_high, signal)
 
 # *Visualizacion de los Resultados (Grafica)*
 
+Visualizacion del Filtrado
 ```python
 plt.figure(figsize=(15, 5))
 plt.subplot(1, 2, 1)
@@ -140,7 +141,32 @@ plt.ylabel('Amplitud [mV]')
 plt.legend()
 plt.grid()
 ```
+Visualizacion Espectro de la señal Filtrada
+
+```python
+N = len(signal_filtrada)
+frequencies = np.fft.fftfreq(N, 1 / fs)[:N // 2]
+spectrum = np.abs(np.fft.fft(signal_filtrada)[:N // 2]) * 2 / N
+
+plt.subplot(1, 2, 2)
+plt.semilogy(frequencies, spectrum)
+plt.title('Espectro de la señal filtrada')
+plt.xlabel('Frecuencia [Hz]')
+plt.ylabel('Magnitud')
+plt.grid()
+plt.tight_layout()
+plt.show()
+```
 ![image](https://github.com/user-attachments/assets/451656b5-2075-4822-b488-504222ebca9c)
+
+## **Panel izquierdo: Señal EMG original vs. filtrada**
+- Interpretación: Se observa que la señal filtrada mantiene la estructura general de la original, pero con menor ruido y variabilidad extrema. Esto sugiere que se ha aplicado un filtro, probablemente un paso banda, que conserva la información útil mientras elimina interferencias.
+
+## **Panel derecho: Espectro de la señal filtrada**
+
+-  La energía de la señal se concentra en frecuencias bajas y medias, mientras que en las altas frecuencias la magnitud disminuye considerablemente. Esto indica que el filtrado ha eliminado componentes de alta frecuencia no deseadas.
+
+
 
 
  
