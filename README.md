@@ -749,7 +749,7 @@ Si ninguna métrica muestra cambios significativos → No hay fatiga detectada
 
  - Intensidad del esfuerzo: La actividad realizada pudo no haber sido lo suficientemente exigente para generar una disminución significativa en la actividad electromiográfica.
 
- - Variabilidad individual: Factores fisiológicos como el nivel de entrenamiento del sujeto pueden haber influido en la resistencia muscular y la falta de cambios significativos.
+ 
 
 
 
