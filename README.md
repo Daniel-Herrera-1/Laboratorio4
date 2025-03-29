@@ -21,7 +21,7 @@ Para ejecutar este código en tu computadora, necesitas instalar lo siguiente:
 
 # Procedimiento
 
-# *Explicacion del codigo*
+# *Explicación del codigo*
 ```python
 import nidaqmx
 import time as time_lib  # Para medir el tiempo de adquisición
@@ -128,7 +128,7 @@ voltaje = np.array(voltaje)
 - Nota: Las listas en Python son más lentas para cálculos numéricos.
 - NumPy permite hacer operaciones matemáticas de manera más rápida y eficiente.
 
- # *Configuracion de Filtros*
+ # *Configuración de Filtros*
 
  ```python
 fs = 1 / np.mean(np.diff(tiempo))  # Frecuencia de muestreo
@@ -180,9 +180,9 @@ filtered = lfilter(b_high, a_high, signal)
 - Luego se aplica el pasa-bajas para eliminar frecuencias altas no deseadas.
 
 
-# *Visualizacion de los Resultados (Grafica)*
+# *Visualización de los Resultados (Grafica)*
 
-Visualizacion del Filtrado
+Visualización del Filtrado
 ```python
 plt.figure(figsize=(15, 5))
 plt.subplot(1, 2, 1)
@@ -194,7 +194,7 @@ plt.ylabel('Amplitud [mV]')
 plt.legend()
 plt.grid()
 ```
-Visualizacion Espectro de la señal Filtrada
+Visualización Espectro de la señal Filtrada
 
 ```python
 N = len(signal_filtrada)
@@ -407,10 +407,10 @@ ventanas, tiempos_ventana = aplicar_ventaneo(
 
 -Esto divide la señal en fragmentos solapados que serán analizados en el dominio de la frecuencia.
 
-# Funcion Analisis ESPECTRAL
+# Funcion  análisis espectral
 
 ```python
-def analisis_espectral_ventanas(ventanas, fs):
+def _espectral_ventanas(ventanas, fs):
 ```
 - ventanas: Lista de segmentos de la señal.
 - fs: Frecuencia de muestreo.
@@ -490,7 +490,7 @@ spectral_entropy.append(entropy)
 
 - Valores bajos → Energía concentrada en pocas frecuencias (tonos puros).
 
-# **Ejecucion analisis espectral**
+# **Ejecucion análisis espectral**
 
 ```python
 median_freqs, mean_freqs, spectral_entropy = analisis_espectral_ventanas(ventanas, fs)
@@ -578,7 +578,7 @@ t_entropy, p_entropy = stats.ttest_ind(early_entropy, late_entropy)
 **Nota3: change positivo → Aumento de la entropía → Mayor aleatoriedad en la señal → Indicio de fatiga.**
 
 
-## Evaluacion estadistica
+## Evaluación estadistica
 
 ```python
 'p_value': p_median,
@@ -612,7 +612,7 @@ resultados_fatiga = detectar_fatiga(tiempos_ventana, median_freqs, mean_freqs, s
       - resultados_fatiga: Diccionario con los valores promedio temprano/tardío, cambios y significancia estadística.
 
 
-  # **Visualizacion Resultados**
+  # **Visualización Resultados**
 
   ### Gráfico 1: Evolución de la Frecuencia Mediana
 
