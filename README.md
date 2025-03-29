@@ -1,6 +1,6 @@
 # Laboratorio 4 Fatiga muscular
 
-### Este laboratorio tiene como propósito analizar el comportamiento de el musculo cuando este es sometido a esfuerzos. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
+### Este laboratorio tiene como propósito analizar el comportamiento de el musculo cuando este es sometido a esfuerzos repetitivos. Se estudiará el fenómeno de la fatiga muscular la cual desencadena la incapacidad de relajar o contraer el musculo
 
 ## Objetivos
 ● Comprender el fenómeno de fatiga en el musculo.
