@@ -229,6 +229,124 @@ tiempos_ventana = []
 - tiempos_ventana: Lista con los tiempos centrales de cada ventana.
 
 
+# **APLICACION DEL VENTANEO**
+
+```python
+for i in range(0, len(signal) - samples_per_window + 1, step_size):
+    ventana = signal[i:i + samples_per_window] * window
+    ventanas.append(ventana)
+    tiempos_ventana.append((i + samples_per_window / 2) / fs)  # Tiempo central
+```
+Paso a paso:
+
+- ```for i in range(0, len(signal) - samples_per_window + 1, step_size)```
+
+      i es la posición inicial de cada ventana.
+
+      Se detiene antes de que la ventana exceda el tamaño de la señal.
+
+      Se avanza en step_size, que es el tamaño de la ventana menos el solapamiento.
+
+  - ```ventana = signal[i:i + samples_per_window] * window```
+
+        Se extrae un segmento de la señal desde i hasta i + samples_per_window.
+
+        Se multiplica por la función de ventana (window), que puede ser Hamming o Hanning.
+
+- ```ventanas.append(ventana)```
+
+       Se guarda la ventana generada en la lista ventanas.
+
+- ```tiempos_ventana.append((i + samples_per_window / 2) / fs)```
+
+       Se calcula el tiempo central de la ventana en segundos.
+
+- ```(i + samples_per_window / 2) / fs da el punto medio en tiempo.```
+
+
+# **Grafico de la Señal con ventanas**
+
+```python
+plt.subplot(3, 1, 1)
+plt.plot(np.arange(len(signal)) / fs, signal, label='Señal filtrada')
+for i in range(0, len(signal) - samples_per_window + 1, step_size):
+    plt.axvspan(i / fs, (i + samples_per_window) / fs, color='green', alpha=0.1)
+plt.title('Señal con ventanas de análisis')
+plt.xlabel('Tiempo [s]')
+plt.ylabel('Amplitud')
+plt.grid()
+```
+- Señal completa
+
+      np.arange(len(signal)) / fs convierte índices a tiempo.
+
+      plt.plot(..., label='Señal filtrada') grafica la señal.
+
+- Ventanas marcadas en verde:
+
+      plt.axvspan(inicio, fin, color='green', alpha=0.1)
+
+      alpha=0.1 hace que las ventanas sean semitransparentes.
+
+  ![image](https://github.com/user-attachments/assets/ca0007c2-2620-4ea4-b5ef-af6456e76145)
+
+
+#  **Gráfico 2: Ventanas aplicadas a la señal**
+
+```python
+plt.subplot(3, 1, 2)
+num_show = min(3, len(ventanas))
+colors = ['red', 'blue', 'green']
+for j in range(num_show):
+    inicio = j * step_size
+    segmento = signal[inicio:inicio + samples_per_window] * window
+    plt.plot(np.arange(samples_per_window) / fs, segmento,
+             color=colors[j], label=f'Ventana {j + 1}')
+plt.title('Ejemplo de ventanas aplicadas')
+plt.xlabel('Tiempo en ventana [s]')
+plt.ylabel('Amplitud')
+plt.legend()
+plt.grid()
+```
+- Se seleccionan hasta 3 ventanas ```(num_show = min(3, len(ventanas)))```.
+
+- Cada ventana se grafica con un color diferente (```red```, ```blue```, ```green```).
+
+- ```plt.plot(..., label=f'Ventana {j + 1}')``` muestra las ventanas superpuestas.
+
+![image](https://github.com/user-attachments/assets/72cd07ff-64ba-46e4-b16d-b35d3ea2e501)
+
+
+#  **Gráfico 3: Función de Ventana Utilizada**
+
+```python
+plt.subplot(3, 1, 3)
+plt.plot(window, 'k', label=f'Función {window_type}')
+plt.title('Función de ventana utilizada')
+plt.xlabel('Muestras')
+plt.ylabel('Amplitud')
+plt.grid()
+plt.legend()
+```
+- Se grafica la función de ventana (Hamming o Hanning).
+
+- ```plt.plot(window, 'k', label=...)``` muestra la curva en negro.
+
+  ![image](https://github.com/user-attachments/assets/a7128a08-43f0-4150-955e-52b60d91bcfe)
+
+
+  
+
+ 
+
+
+
+
+
+
+
+
+
  
 
 
