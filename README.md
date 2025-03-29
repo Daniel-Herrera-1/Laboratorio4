@@ -1,8 +1,6 @@
-
-
 # Laboratorio 4 Fatiga muscular
 
-### Este laboratorio tiene como propósito analizar el comportamiento de los músculos cuando son sometidos a actividades repetitivas e intensas. Se estudiará el fenómeno de la fatiga, la cual puede llevar a la falla del músculo para poder relajarse y contraerse
+### Este laboratorio tiene como propósito analizar el comportamiento de los materiales cuando son sometidos a cargas cíclicas. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
 
 ## Objetivos
 ● Comprender el fenómeno de fatiga en materiales sometidos a cargas cíclicas.
@@ -18,7 +16,7 @@ Para ejecutar este código en tu computadora, necesitas instalar lo siguiente:
 - Python 3.x (versión recomendada 3.9 o superior)
 - Sistema de adquisición de datos (DAQ) para el registro de señales musculares.
 - Electrodos para la medición de actividad electromiográfica (EMG).
-- Objeto para inducir fatiga muscular (por ejemplo, una pelota de estrés).
+- Objeto para inducir fatiga muscular (por ejemplo, una pelota antiestres).
 - Software para análisis de datos (Excel, MATLAB o equivalente).
 
 # Procedimiento
@@ -437,6 +435,245 @@ spectral_entropy.append(entropy)
 
 - Valores bajos → Energía concentrada en pocas frecuencias (tonos puros).
 
+# **Ejecucion analisis espectral**
+
+```python
+median_freqs, mean_freqs, spectral_entropy = analisis_espectral_ventanas(ventanas, fs)
+```
+- ```median_freqs:``` Frecuencia mediana de cada ventana.
+
+- ```mean_freqs:``` Frecuencia media de cada ventana.
+
+- ```spectral_entropy:``` Entropía espectral de cada ventana.
+
+## Divison de Segmentos 
+```python
+
+split_idx = len(tiempos) // 2
+early_t = tiempos[:split_idx]
+late_t = tiempos[split_idx:]
+
+```
+- ```split_idx:``` Índice que divide la señal en dos mitades.
+-  ```early_t:``` Contiene los tiempos centrales de las ventanas en la primera mitad del registro.
+-  ```late_t:``` Contiene los tiempos centrales en la segunda mitad.
+
+
+## **Extracción de métricas espectrales en cada segmento**
+
+```python
+early_median = median_freqs[:split_idx]
+late_median = median_freqs[split_idx:]
+
+early_mean = mean_freqs[:split_idx]
+late_mean = mean_freqs[split_idx:]
+
+early_entropy = spectral_entropy[:split_idx]
+late_entropy = spectral_entropy[split_idx:]
+```
+### **se separan los valores de frecuencia mediana, media y entropía en dos conjuntos:**
+
+- ```early_*:``` Valores en la primera mitad (sin fatiga).
+
+- ```late_*:``` Valores en la segunda mitad (posible fatiga)
+
+
+## **Pruebas estadísticas para detección de fatiga**
+```pythom
+t_median, p_median = stats.ttest_ind(early_median, late_median)
+t_mean, p_mean = stats.ttest_ind(early_mean, late_mean)
+t_entropy, p_entropy = stats.ttest_ind(early_entropy, late_entropy)
+```
+
+- t_*: Estadístico de la prueba (magnitud de la diferencia).
+
+- p_*: Valor p (indica si la diferencia es significativa).
+
+
+## Cálculo de los valores medios y cambio absoluto
+```python
+'median_freq': {
+    'early': np.mean(early_median),
+    'late': np.mean(late_median),
+    'change': np.mean(late_median) - np.mean(early_median),
+```
+- early: Promedio de la frecuencia mediana en la primera mitad de la señal.
+
+- late: Promedio en la segunda mitad.
+
+- change: Diferencia entre el valor tardío y el temprano.
+
+  **Nota1: change negativo → Disminución de la frecuencia mediana → Fatiga muscular presente.**
+
+  ```python
+  'mean_freq': {
+    'early': np.mean(early_mean),
+    'late': np.mean(late_mean),
+    'change': np.mean(late_mean) - np.mean(early_mean),
+  ```
+**Nota2: change negativo → Disminución de la frecuencia media → Indicación de fatiga.**
+
+
+```python
+'spectral_entropy': {
+    'early': np.mean(early_entropy),
+    'late': np.mean(late_entropy),
+    'change': np.mean(late_entropy) - np.mean(early_entropy),
+```
+**Nota3: change positivo → Aumento de la entropía → Mayor aleatoriedad en la señal → Indicio de fatiga.**
+
+
+## Evaluacion estadistica
+
+```python
+'p_value': p_median,
+'significant': p_median < 0.05
+```
+
+- ``` Si significant: True```, la disminución de la frecuencia mediana es estadísticamente significativa → evidencia de fatiga.
+
+- ```Si significant: False```, no hay suficiente evidencia estadística para afirmar la presencia de fatiga.
+
+
+# **Detección de Fatiga**
+
+```python
+resultados_fatiga = detectar_fatiga(tiempos_ventana, median_freqs, mean_freqs, spectral_entropy)
+```
+- Llama a la función detectar_fatiga para analizar la evolución de las características espectrales y determinar si hay fatiga muscular.
+  
+      Entrada
+
+      - tiempos_ventana: Lista con los tiempos centrales de cada ventana de análisis.
+
+       - median_freqs: Frecuencia mediana de cada ventana.
+
+      - mean_freqs: Frecuencia media de cada ventana.
+
+      - spectral_entropy: Entropía espectral de cada ventana.
+  
+      Salida:
+
+      - resultados_fatiga: Diccionario con los valores promedio temprano/tardío, cambios y significancia estadística.
+
+
+  # **Visualizacion Resultados**
+
+  ### Gráfico 1: Evolución de la Frecuencia Mediana
+
+  ```python
+  plt.subplot(3, 1, 1)
+  plt.plot(tiempos_ventana, median_freqs, 'b-o', label='Frecuencia mediana')
+  plt.axvline(tiempos_ventana[len(tiempos_ventana) // 2], color='r', linestyle='--', label='División temprano/tardío')
+  plt.title('Evolución de la Frecuencia Mediana')
+   plt.xlabel('Tiempo [s]')
+  plt.ylabel('Frecuencia [Hz]')
+  plt.grid()
+  plt.legend()
+  ```
+![image](https://github.com/user-attachments/assets/85e44cb9-98be-4b4d-a8de-3393f10a97c4)
+
+-  Una disminución en la frecuencia mediana en la segunda mitad del tiempo sugiere fatiga muscular.
+
+  ### Gráfico 2: Evolución de la Frecuencia Media
+
+  ```python
+plt.subplot(3, 1, 2)
+plt.plot(tiempos_ventana, mean_freqs, 'g-o', label='Frecuencia media')
+plt.axvline(tiempos_ventana[len(tiempos_ventana) // 2], color='r', linestyle='--')
+plt.title('Evolución de la Frecuencia Media')
+plt.xlabel('Tiempo [s]')
+plt.ylabel('Frecuencia [Hz]')
+plt.grid()
+plt.legend()
+
+```
+![image](https://github.com/user-attachments/assets/d05a472b-361e-422a-8885-745bf168c606)
+
+- Si la frecuencia media disminuye con el tiempo, es una señal de fatiga.
+
+
+### Gráfico 3: Evolución de la Entropía Espectral
+
+```python
+plt.subplot(3, 1, 3)
+plt.plot(tiempos_ventana, spectral_entropy, 'm-o', label='Entropía espectral')
+plt.axvline(tiempos_ventana[len(tiempos_ventana) // 2], color='r', linestyle='--')
+plt.title('Evolución de la Entropía Espectral')
+plt.xlabel('Tiempo [s]')
+plt.ylabel('Entropía')
+plt.grid()
+plt.legend()
+
+```
+![image](https://github.com/user-attachments/assets/d734bca4-e28a-4900-b7d1-be37dff459c6)
+
+- Si la entropía espectral aumenta con el tiempo, indica mayor aleatoriedad y pérdida de estructura en la señal → posible fatiga muscular.
+
+# **Reporte de Resultados**
+
+```python
+print("\n=== RESULTADOS DEL ANÁLISIS DE FATIGA ===")
+print(f"\nFrecuencia Mediana:")
+print(f"  Temprano: {resultados_fatiga['median_freq']['early']:.2f} Hz")
+print(f"  Tardío: {resultados_fatiga['median_freq']['late']:.2f} Hz")
+print(f"  Cambio: {resultados_fatiga['median_freq']['change']:.2f} Hz")
+print(
+    f"  Significativo (p<0.05): {'Sí' if resultados_fatiga['median_freq']['significant'] else 'No'} (p={resultados_fatiga['median_freq']['p_value']:.4f})")
+
+print(f"\nFrecuencia Media:")
+print(f"  Temprano: {resultados_fatiga['mean_freq']['early']:.2f} Hz")
+print(f"  Tardío: {resultados_fatiga['mean_freq']['late']:.2f} Hz")
+print(f"  Cambio: {resultados_fatiga['mean_freq']['change']:.2f} Hz")
+print(
+    f"  Significativo (p<0.05): {'Sí' if resultados_fatiga['mean_freq']['significant'] else 'No'} (p={resultados_fatiga['mean_freq']['p_value']:.4f})")
+
+print(f"\nEntropía Espectral:")
+print(f"  Temprano: {resultados_fatiga['spectral_entropy']['early']:.2f}")
+print(f"  Tardío: {resultados_fatiga['spectral_entropy']['late']:.2f}")
+print(f"  Cambio: {resultados_fatiga['spectral_entropy']['change']:.2f}")
+print(
+    f"  Significativo (p<0.05): {'Sí' if resultados_fatiga['spectral_entropy']['significant'] else 'No'} (p={resultados_fatiga['spectral_entropy']['p_value']:.4f})")
+
+# Interpretación
+if resultados_fatiga['median_freq']['significant'] and resultados_fatiga['median_freq']['change'] < 0:
+    print("\nCONCLUSIÓN: Se detectó fatiga muscular significativa (disminución en frecuencia mediana)")
+elif resultados_fatiga['mean_freq']['significant'] and resultados_fatiga['mean_freq']['change'] < 0:
+    print("\nCONCLUSIÓN: Se detectó fatiga muscular (disminución en frecuencia media)")
+else:
+    print("\nCONCLUSIÓN: No se detectó fatiga muscular significativa")
+```
+    === RESULTADOS DEL ANÁLISIS DE FATIGA ===
+    
+    Frecuencia Mediana:
+      Temprano: 61.89 Hz
+      Tardío: 61.99 Hz
+      Cambio: 0.10 Hz
+      Significativo (p<0.05): No (p=0.9674)
+    
+    Frecuencia Media:
+      Temprano: 70.60 Hz
+      Tardío: 70.99 Hz
+      Cambio: 0.39 Hz
+      Significativo (p<0.05): No (p=0.7845)
+    
+    Entropía Espectral:
+      Temprano: 5.24
+      Tardío: 5.23
+      Cambio: -0.01
+      Significativo (p<0.05): No (p=0.6972)
+    
+    CONCLUSIÓN: No se detectó fatiga muscular significativa
+
+## Este bloque de código imprime un reporte detallado del análisis de fatiga muscular con base en tres métricas clave: frecuencia mediana, frecuencia media y entropía espectral. 
+
+-  Interpretación de los resultados:
+
+Si la frecuencia mediana disminuyó significativamente → Fatiga detectada.
+
+Si la frecuencia media disminuyó significativamente → Fatiga probable.
+
+Si ninguna métrica muestra cambios significativos → No hay fatiga detec
 
 
 
