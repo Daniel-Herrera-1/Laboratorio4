@@ -2,7 +2,7 @@
 
 # Laboratorio 4 Fatiga muscular
 
-### Este laboratorio tiene como propósito analizar el comportamiento de los materiales cuando son sometidos a cargas cíclicas. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos, lo que puede llevar a la falla del material sin necesidad de alcanzar su resistencia última
+### Este laboratorio tiene como propósito analizar el comportamiento de los músculos cuando son sometidos a actividades repetitivas e intensas. Se estudiará el fenómeno de la fatiga, la cual puede llevar a la falla del músculo para poder relajarse y contraerse
 
 ## Objetivos
 ● Comprender el fenómeno de fatiga en materiales sometidos a cargas cíclicas.
