@@ -1,9 +1,9 @@
 # Laboratorio 4 Fatiga muscular
 
-### Este laboratorio tiene como propósito analizar el comportamiento de el musculo cuando este ces sometido a esfuerzos. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
+### Este laboratorio tiene como propósito analizar el comportamiento de el musculo cuando este es sometido a esfuerzos. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
 
 ## Objetivos
-● Comprender el fenómeno de fatiga en materiales sometidos a cargas cíclicas.
+● Comprender el fenómeno de fatiga en el musculo.
 
 ● Utilizar un sistema de adquisición de datos (DAQ) para registrar y analizar la actividad eléctrica del músculo.
 
@@ -728,8 +728,28 @@ Si la frecuencia mediana disminuyó significativamente → Fatiga detectada.
 
 Si la frecuencia media disminuyó significativamente → Fatiga probable.
 
-Si ninguna métrica muestra cambios significativos → No hay fatiga detec
+Si ninguna métrica muestra cambios significativos → No hay fatiga detectada
 
+
+# Conclusiones
+
+- Adquisición exitosa: Se registró una señal de EMG de 120 segundos con una frecuencia de 1 kHz, asegurando una alta resolución temporal.
+
+- Lectura eficiente: El uso de un buffer de 1000 muestras permitió una captura fluida y sin pérdidas de datos.
+
+- Almacenamiento organizado: Los datos se guardaron en un archivo TXT con formato tabulado, facilitando su análisis en distintas plataformas.
+
+- Análisis espectral: Se evaluaron la frecuencia mediana, frecuencia media y entropía espectral, indicadores clave para la detección de fatiga muscular.
+
+### ***- No se detectó fatiga significativa: Aunque se observó una ligera disminución en la frecuencia mediana y media, los valores de p obtenidos en el análisis estadístico fueron mayores a 0.05, indicando que los cambios no son lo suficientemente grandes para considerarse estadísticamente significativos.***
+
+  Posibles razones:
+
+- Duración insuficiente: Un período de 120 segundos puede no haber sido suficiente para inducir fatiga muscular evidente.
+
+ - Intensidad del esfuerzo: La actividad realizada pudo no haber sido lo suficientemente exigente para generar una disminución significativa en la actividad electromiográfica.
+
+ - Variabilidad individual: Factores fisiológicos como el nivel de entrenamiento del sujeto pueden haber influido en la resistencia muscular y la falta de cambios significativos.
 
 
 
