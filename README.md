@@ -1,6 +1,6 @@
 # Laboratorio 4 Fatiga muscular
 
-### Este laboratorio tiene como propósito analizar el comportamiento de los materiales cuando son sometidos a cargas cíclicas. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
+### Este laboratorio tiene como propósito analizar el comportamiento de el musculo cuando este ces sometido a esfuerzos. Se estudiará el fenómeno de la fatiga, que ocurre debido a la aplicación repetitiva de esfuerzos
 
 ## Objetivos
 ● Comprender el fenómeno de fatiga en materiales sometidos a cargas cíclicas.
@@ -21,7 +21,62 @@ Para ejecutar este código en tu computadora, necesitas instalar lo siguiente:
 
 # Procedimiento
 
-# *1.Explicacion del codigo*
+# *Explicacion del codigo*
+```python
+import nidaqmx
+import time as time_lib  # Para medir el tiempo de adquisición
+# Parámetros de adquisición
+fs = 1000  # Frecuencia de muestreo en Hz
+duracion = 120  # Duración en segundos
+buffer_size = 1000  # Número de muestras a leer por iteración
+
+# Crear tarea de adquisición
+with nidaqmx.Task() as task:
+    task.ai_channels.add_ai_voltage_chan("Dev1/ai0")
+    task.timing.cfg_samp_clk_timing(fs, sample_mode=nidaqmx.constants.AcquisitionType.CONTINUOUS)
+
+    # Variables para almacenar datos
+    all_data = []
+    start_time = time_lib.time()
+
+    print("Adquiriendo datos...")
+
+    while time_lib.time() - start_time < duracion:
+        # Leer datos en bloques
+        data = task.read(number_of_samples_per_channel=buffer_size, timeout=10)
+        all_data.extend(data)  # Agregar los datos a la lista
+
+    print("Adquisición completada.")
+
+# Convertir datos a numpy array
+all_data = np.array(all_data)
+
+# Crear eje de tiempo
+time = np.linspace(0, duracion, len(all_data))
+
+# Guardar los datos en un archivo TXT
+filename = "emg_signal_120s_3.txt"
+np.savetxt(filename, np.column_stack((time, all_data)), delimiter="\t", header="Tiempo(s)\tVoltaje(V)", comments="")
+
+print(f"Señal guardada en {filename}")
+```
+- Este fragmento de código adquiere y guarda datos de una señal electromiográfica (EMG) utilizando una tarjeta de adquisición de datos NI DAQ a través de la biblioteca nidaqmx
+  
+        nidaqmx → Permite la comunicación con dispositivos NI DAQ para la adquisición de señales.
+        time_lib (renombrado de time) → Se usa para medir el tiempo de adquisición.
+
+- fs = 1000 → Se adquirirá 1000 muestras por segundo (1 kHz).
+-  duracion = 120 → La adquisición durará 120 segundos.
+- uffer_size = 1000 → Se leerán bloques de 1000 muestras por iteración, lo que equivale a 1
+
+ - ```nidaqmx.Task()``` Crea una tarea de adquisición de datos.
+   
+         add_ai_voltage_chan("Dev1/ai0") → Agrega un canal de voltaje analógico en la entrada "Dev1/ai0".
+         cfg_samp_clk_timing(fs, sample_mode=nidaqmx.constants.AcquisitionType.CONTINUOUS) → Configura la frecuencia de muestreo (fs) y el modo de adquisición continua.
+
+### Nota: "Dev1/ai0" representa la entrada analógica del dispositivo de adquisición.
+
+
 
 ```python
 import numpy as np
