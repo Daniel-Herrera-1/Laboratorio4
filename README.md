@@ -334,6 +334,112 @@ plt.legend()
 
   ![image](https://github.com/user-attachments/assets/a7128a08-43f0-4150-955e-52b60d91bcfe)
 
+# **Aplicar Ventaneo a Señal Filtrada**
+
+```python
+window_size = 2.0  # segundos
+overlap = 0.5  # 50% de solapamiento
+ventanas, tiempos_ventana = aplicar_ventaneo(
+    signal_filtrada, fs, window_size, overlap, 'hamming')
+```
+- Se define el tamaño de ventana (window_size = 2.0 segundos).
+
+- Se especifica un solapamiento del 50% (overlap = 0.5).
+
+- Se llama a la función aplicar_ventaneo(), que devuelve:
+
+      ventanas: Lista de segmentos de la señal filtrada con la ventana aplicada.
+
+      tiempos_ventana: Lista de los tiempos centrales de cada ventana.
+
+-Esto divide la señal en fragmentos solapados que serán analizados en el dominio de la frecuencia.
+
+# Funcion Analisis ESPECTRAL
+
+```python
+def analisis_espectral_ventanas(ventanas, fs):
+```
+- ventanas: Lista de segmentos de la señal.
+- fs: Frecuencia de muestreo.
+  **Y devuelve tres métricas espectrales:**
+  
+- median_freqs: Lista de frecuencias medianas por ventana.
+- mean_freqs: Lista de frecuencias medias por ventana.
+- spectral_entropy: Lista de valores de entropía espectral por ventana.
+
+# Inicialización de listas vacías
+  ```python
+  edian_freqs = []
+mean_freqs = []
+spectral_entropy = []
+```
+- Se crean tres listas vacías para almacenar los resultados de cada ventana.
+
+# Cálculo del espectro con FFT
+
+```python
+n = len(ventana)
+spectrum = np.abs(np.fft.fft(ventana)[:n // 2]) * 2 / n
+freqs = np.fft.fftfreq(n, 1 / fs)[:n // 2]
+psd = spectrum ** 2
+```
+- np.fft.fft(ventana): Calcula la Transformada Rápida de Fourier (FFT).
+
+- [:n // 2]: Se queda solo con la mitad positiva del espectro.
+
+- np.abs(... ) * 2 / n: Se normaliza la amplitud de la FFT.
+
+- np.fft.fftfreq(n, 1 / fs)[:n // 2]: Calcula las frecuencias asociadas a la FFT.
+
+- psd = spectrum ** 2: Se obtiene la Densidad Espectral de Potencia (PSD), que representa la distribución de energía en el dominio de la frecuencia.
+
+# Cálculo de la frecuencia mediana
+
+```python
+cumsum = np.cumsum(psd)
+median_freq = freqs[np.searchsorted(cumsum, cumsum[-1] / 2)]
+median_freqs.append(median_freq)
+```
+- np.cumsum(psd): Calcula la suma acumulada de la PSD.
+
+- np.searchsorted(cumsum, cumsum[-1] / 2): Encuentra el índice donde la suma acumulada alcanza el 50% de la energía total.
+
+- median_freqs.append(median_freq): Se guarda la frecuencia mediana.
+
+# Calculo Frecuencia Media
+
+```python
+mean_freq = np.sum(freqs * psd) / np.sum(psd)
+mean_freqs.append(mean_freq)
+```
+Nota: La frecuencia media indica el "centro de masa" del espectro.
+
+- np.sum(freqs * psd) / np.sum(psd): Calcula la media ponderada de las frecuencias con la PSD.
+
+- mean_freqs.append(mean_freq): Se guarda la frecuencia media.
+
+# Cálculo de la entropía espectral
+
+```python
+psd_norm = psd / np.sum(psd)
+entropy = -np.sum(psd_norm * np.log(psd_norm + 1e-10))
+spectral_entropy.append(entropy)
+```
+- psd_norm = psd / np.sum(psd): Se normaliza la PSD para que su suma sea 1.
+
+- np.sum(psd_norm * np.log(psd_norm + 1e-10)): Se aplica la fórmula de la entropía de Shannon.
+
+- spectral_entropy.append(entropy): Se guarda la entropía espectral.
+
+## La entropía espectral mide qué tan disperso está el espectro.
+
+- Valores altos → Energía distribuida en muchas frecuencias (ruido, señal compleja).
+
+- Valores bajos → Energía concentrada en pocas frecuencias (tonos puros).
+
+
+
+
 
   
 
