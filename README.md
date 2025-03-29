@@ -167,6 +167,66 @@ plt.show()
 -  La energía de la señal se concentra en frecuencias bajas y medias, mientras que en las altas frecuencias la magnitud disminuye considerablemente. Esto indica que el filtrado ha eliminado componentes de alta frecuencia no deseadas.
 
 
+ # *Aventanamiento*
+
+ ```python
+def aplicar_ventaneo(signal, fs, window_size=1.0, overlap=0.5, window_type='hamming', plot_ventanas=True):
+
+```
+- signal: La señal de entrada a la que se le aplicará el ventaneo.
+
+- fs: La frecuencia de muestreo de la señal, necesaria para convertir segundos a muestras.
+
+- window_size: Tamaño de la ventana en segundos (por defecto, 1.0 s).
+
+- overlap: Porcentaje de solapamiento entre ventanas, un valor entre 0 y 1 (por defecto, 50%).
+
+- window_type: Tipo de ventana a aplicar ('hamming' por defecto).
+
+- plot_ventanas: Un booleano para decidir si se grafican las ventanas.
+
+
+## **Cálculo del Tamaño de Ventana y Paso*
+
+```python
+samples_per_window = int(window_size * fs)
+overlap_samples = int(samples_per_window * overlap)
+step_size = samples_per_window - overlap_samples
+```
+-  ```samples_per_window: ```Convierte el tamaño de la ventana de segundos a muestras.
+
+- ```overlap_samples: ``` Calcula cuántas muestras de la ventana anterior se reutilizan.
+
+- ```step_size: ``` Número de muestras que se avanza en cada ventana.
+
+## **Seleccion Tipo de Ventana*
+
+```python
+if window_type.lower() == 'hamming':
+    window = np.hamming(samples_per_window)
+elif window_type.lower() == 'hanning':
+    window = np.hanning(samples_per_window)
+else:
+    raise ValueError("Tipo de ventana no soportado")
+```
+- se usa ```np.hamming()``` o ```np.hanning()``` según el tipo de ventana:
+
+      Ventana de Hamming: Reduce los efectos de fugas espectrales mejor que la rectangular.
+
+      Ventana de Hanning: Similar a la de Hamming pero con más atenuación en los extremos.
+
+- ```lower():``` Asegura que el usuario pueda escribir "Hamming" o "hamming" sin error.
+
+**Inicialización de Listas para Guardar los Resultados**
+
+```python
+ventanas = []
+tiempos_ventana = []
+```
+
+- ventanas: Lista donde se almacenarán los segmentos de la señal.
+
+- tiempos_ventana: Lista con los tiempos centrales de cada ventana.
 
 
  
